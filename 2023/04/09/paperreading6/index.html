@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Experience-Driven Computational Resource Allocation of Federated Learning by Deep Reinforcement Learning | Foreshadowing</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+  
+  <meta name="description" content="换个方向。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Experience-Driven Computational Resource Allocation of Federated Learning by Deep Reinforcement Learning">
+<meta property="og:url" content="http://example.com/2023/04/09/paperreading6/index.html">
+<meta property="og:site_name" content="Foreshadowing">
+<meta property="og:description" content="换个方向。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-04-09T06:07:13.000Z">
+<meta property="article:modified_time" content="2023-04-15T13:40:29.695Z">
+<meta property="article:author" content="Foreshadowing">
+<meta name="twitter:card" content="summary"><meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="wrapper">
+    <header id="header">
+  <h1 id="title">
+    <a href="/">Foreshadowing</a>
+  </h1>
+  <nav>
+    
+    
+      
+      <a class="nav-link" href="/">Home</a>
+    
+      
+        <span class="nav-spacer">×</span>
+      
+      <a class="nav-link" href="/archives">Archives</a>
+    
+    
+  </nav>
+</header>
+
+    <div id="content">
+      <article id="post-paperreading6" class="article article-type-post" itemprop="blogPost" itemscope>
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 class="article-title" itemprop="headline name">
+      Experience-Driven Computational Resource Allocation of Federated Learning by Deep Reinforcement Learning
+    </h2>
+  
+
+
+        <div class="article-meta">
+          <time class="article-date" datetime="2023-04-09T06:07:13.000Z" itemprop="datePublished">四月 9, 2023, 2:07 下午</time>
+
+          
+        </div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+        <p>换个方向。</p>
+<span id="more"></span>
+
+<p>在本文中，我们提出通过降低训练组中速度较快的移动设备的cpu周期频率来提高联邦学习的能源效率。由于所有设备都是通过迭代同步的，因此只要它们在每次迭代中最慢的设备之前完成训练，联邦学习速度就会保持不变。基于这一思想，我们提出了一个优化问题，旨在使系统总成本最小化，系统总成本定义为训练时间和能量消耗的加权和。</p>
+<p>针对非线性约束的复杂性和网络质量的不可感知性，设计了一种基于深度强化学习(DRL)的经验驱动算法，该算法可以在不了解网络质量的情况下收敛到近最优解。</p>
+<p>•我们研究了一种新型的联邦学习移动计算资源分配问题，该问题通过利用移动设备及其网络连接的异质性，综合考虑了学习时间和能量效率。</p>
+<p>•我们提出了一种基于DRL的经验驱动算法来解决该问题，该算法可以有效地学习最适合移动计算资源分配的策略。</p>
+<p>•我们在小规模测试平台上进行了实验和大规模模拟，以评估所提出算法的性能。我们将我们的方法与最先进的解决方案进行了比较，结果进一步证明了我们方法的优越性。</p>
+<h3 id="网络质量如何影响联邦学习的学习速度和能源效率。"><a href="#网络质量如何影响联邦学习的学习速度和能源效率。" class="headerlink" title="网络质量如何影响联邦学习的学习速度和能源效率。"></a>网络质量如何影响联邦学习的学习速度和能源效率。</h3><p>-&gt; 每个移动设备的训练时间由两部分组成，一是使用本地数据训练模型的计算时间，二是将训练好的模型上传到参数服务器的通信时间。</p>
+<p>-&gt; 由于参数服务器需要收集所有设备的模型来生成更新的全局模型，因此每次迭代的训练时间由最慢的设备决定。</p>
+<p>-&gt; 导致了浪费。</p>
+<p>-&gt; 这一观察促使我们放慢设备B和C上的计算速度，以减少CPU&#x2F;GPU的能耗，只要它们的训练时间不晚于最慢的那个。</p>
+<p>-&gt; 但是网络质量会发生变化，在实践中无法准确预测。另一方面，缓慢的计算可以提高能量效率，但会导致更长的训练时间。其次，优化计算资源配置以实现较短的学习时间和较低的能源效率的问题是困难的。</p>
+<p>-&gt; 我们不再纠结于网络质量预测和基于优化的算法设计，而是采用深度强化学习来决定移动设备应该以多快的速度训练它们的本地模型。</p>
+<p>看得差不多了，这篇文章对我没有意义，不看了。</p>
+
+      
+    </div>
+    
+    
+    
+  </div>
+</article>
+
+  
+<nav id="article-nav" class="article-nav">
+  
+    <a href="/2023/04/15/paperreading7/" id="article-nav-newer" class="article-nav-link-wrap newer">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Non-Interactive Privacy-Preserving Frequent Itemset Mining over Encrypted Cloud Data
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2023/04/06/techology4/" id="article-nav-older" class="article-nav-link-wrap older">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">
+        
+          Apriori算法
+        
+      </div>
+    </a>
+  
+</nav>
+
+
+
+
+
+
+    </div>
+  </div>
+  
+
+
+
+
+<div id="settings-container">
+  <div id="dark-mode">dark</div>
+  <div id="sans-font">sans</div>
+</div>
+<script type="text/javascript">
+let d=document,r=d.documentElement.style,f=r.setProperty.bind(r),l=localStorage,s=l.getItem('s')||(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches),n=l.getItem('n'),m=d.getElementById("dark-mode"),b=()=>{f('--bg-color','#fafafa');f('--code-bg-color','#f4f4f4');f('--text-color','#212121');f('--secondary-color','#808080');f('--tertiary-color','#b0b0b0');f('--link-color','#b5c8cf');f('--link-hover-color','#618794');f('--link-bg-color','#dae4e7');f('--selection-color','#dae4e7');m.innerHTML="dark"},c=()=>{f('--bg-color','#212121');f('--code-bg-color','#292929');f('--text-color','#fff');f('--secondary-color','#c0c0c0');f('--tertiary-color','#6e6e6e');f('--link-color','#4d6b75');f('--link-hover-color','#96b1bb');f('--link-bg-color','#5d828e');f('--selection-color','#acc1c9');m.innerHTML="light"},o=d.getElementById("sans-font"),e=()=>{f('--body-stack','"Lora", "Georgia", "Times New Roman", serif');o.innerHTML="sans"},g=()=>{f('--body-stack','"Lato", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "Verdana", sans-serif');o.innerHTML="serif"};m.onclick=()=>{if(s==2){s=1;l.setItem('s',s);c()}else{s=2;l.setItem('s',s);b()}};o.onclick=()=>{if(n==2){n=1;l.setItem('n',n);g()}else{n=2;l.setItem('n',n);e()}};if(!s){s=2;l.setItem('s',2)};if(s==1){c()};if(!n){n=2;l.setItem('n',2)};if(n==1){g()};
+</script>
+
+
+
+
+</body>
+</html>

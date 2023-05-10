@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Foreshadowing</title>
+  <title>idea from How To Backdoor Federated Learning | Foreshadowing</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
   
@@ -15,15 +15,15 @@
 <link rel="stylesheet" href="/css/highlight.css">
 
   
-  <meta name="description" content="title： idea from How To Backdoor Federated Learning针对于How To Backdoor Federated Learning，给出的防御方案。">
+  <meta name="description" content="针对于How To Backdoor Federated Learning，给出的防御方案。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Foreshadowing">
+<meta property="og:title" content="idea from How To Backdoor Federated Learning">
 <meta property="og:url" content="http://example.com/2023/03/26/idea1/index.html">
 <meta property="og:site_name" content="Foreshadowing">
-<meta property="og:description" content="title： idea from How To Backdoor Federated Learning针对于How To Backdoor Federated Learning，给出的防御方案。">
+<meta property="og:description" content="针对于How To Backdoor Federated Learning，给出的防御方案。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-03-26T06:22:10.811Z">
-<meta property="article:modified_time" content="2023-03-30T07:34:37.884Z">
+<meta property="article:modified_time" content="2023-04-06T07:31:42.748Z">
 <meta property="article:author" content="Foreshadowing">
 <meta name="twitter:card" content="summary"><meta name="generator" content="Hexo 6.3.0"></head>
 
@@ -52,11 +52,26 @@
       <article id="post-idea1" class="article article-type-post" itemprop="blogPost" itemscope>
   <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h2 class="article-title" itemprop="headline name">
+      idea from How To Backdoor Federated Learning
+    </h2>
+  
+
+
+        <div class="article-meta">
+          <time class="article-date" datetime="2023-03-26T06:22:10.811Z" itemprop="datePublished">三月 26, 2023, 2:22 下午</time>
+
+          
+        </div>
+      </header>
+    
     <div class="article-entry" itemprop="articleBody">
       
       
-        <hr>
-<h2 id="title：-idea-from-How-To-Backdoor-Federated-Learning"><a href="#title：-idea-from-How-To-Backdoor-Federated-Learning" class="headerlink" title="title： idea from How To Backdoor Federated Learning"></a>title： idea from How To Backdoor Federated Learning</h2><p>针对于How To Backdoor Federated Learning，给出的防御方案。</p>
+        <p>针对于How To Backdoor Federated Learning，给出的防御方案。</p>
 <span id="more"></span>
 
 <p>首先对How To Backdoor Federated Learning的方案进行简述：</p>
@@ -70,11 +85,13 @@
 <p><font color=#31655f></font><br><font color=#31655f>解读：<br>首先，敌手的权限很高，可以直接当作恶意的参与者，无法通过本地的检测手段进行检测，需要参与者自行判断的方案也不可行。其次，通过$\mathcal{L}_{ano}$，正常数据难以测出模型的异常，同时由于联邦学习的特征，无法进行这种检测。服务器手上没有数据。</font></p>
 <p>我的方案：</p>
 <p>每轮服务器将$G^{t}$发给参与者时，参与者对新的$G^{t}$用自己的数据进行预测，对该轮训练成果进行投票（这个发送的时机可以是训练之后发给参与训练的客户端，也可以重新选择客户端，可以对比效果）。如果担心投票结果泄露信息，导致服务器有意改变每轮选择的用户的频率，可以使用匿名投票方案。还可以根据投票结果对用户的信任度进行赋值修改，维护模型。</p>
-<h2 id="思路相同的论问对于参与者判定的设定如下，，使用参数q作为阈值-由总人数与支持人数进行计算。而用户是否支持模型使用“一个有毒的模型可以显著地改变错误率的变化”进行判断。通过比较更新模型的错误率与之前模型的错误率，在一个固定的数据集上，每个标签单独的错误率，当后续轮的错误率与最近观察到的公认模型的错误率显著不同时，作为模型错误的特征"><a href="#思路相同的论问对于参与者判定的设定如下，，使用参数q作为阈值-由总人数与支持人数进行计算。而用户是否支持模型使用“一个有毒的模型可以显著地改变错误率的变化”进行判断。通过比较更新模型的错误率与之前模型的错误率，在一个固定的数据集上，每个标签单独的错误率，当后续轮的错误率与最近观察到的公认模型的错误率显著不同时，作为模型错误的特征" class="headerlink" title="思路相同的论问对于参与者判定的设定如下，，使用参数q作为阈值 由总人数与支持人数进行计算。而用户是否支持模型使用“一个有毒的模型可以显著地改变错误率的变化”进行判断。通过比较更新模型的错误率与之前模型的错误率，在一个固定的数据集上，每个标签单独的错误率，当后续轮的错误率与最近观察到的公认模型的错误率显著不同时，作为模型错误的特征
- 
-  "></a>思路相同的论问对于参与者判定的设定如下，，使用参数q作为阈值 由总人数与支持人数进行计算。而用户是否支持模型使用“一个有毒的模型可以显著地改变错误率的变化”进行判断。通过比较更新模型的错误率与之前模型的错误率，在一个固定的数据集上，每个标签单独的错误率，当后续轮的错误率与最近观察到的公认模型的错误率显著不同时，作为模型错误的特征
- 
-  </h2><h2 id="–"><a href="#–" class="headerlink" title="–"></a>–</h2><h2 id="–-1"><a href="#–-1" class="headerlink" title="–"></a>–</h2><h2 id="–-2"><a href="#–-2" class="headerlink" title="–"></a>–</h2><h2 id="–-3"><a href="#–-3" class="headerlink" title="–"></a>–</h2><h2 id="–-4"><a href="#–-4" class="headerlink" title="–"></a>–</h2><h2 id="–-5"><a href="#–-5" class="headerlink" title="–"></a>–</h2><h2 id="–-6"><a href="#–-6" class="headerlink" title="–"></a>–</h2><h2 id="–-7"><a href="#–-7" class="headerlink" title="–"></a>–</h2><h2 id="–-8"><a href="#–-8" class="headerlink" title="–"></a>–</h2><p>其他人的解决方案：</p>
+<p>思路相同的论问对于参与者判定的设定如下，，使用参数q作为阈值 由总人数与支持人数进行计算。而用户是否支持模型使用“一个有毒的模型可以显著地改变错误率的变化”进行判断。通过比较更新模型的错误率与之前模型的错误率，在一个固定的数据集上，每个标签单独的错误率，当后续轮的错误率与最近观察到的公认模型的错误率显著不同时，作为模型错误的特征</p>
+<p>场景：<br>所有参与者和服务器都配合协议的流程，攻击者也不会违反，因为希望被攻击的模型被使用，单纯的破坏是没有意义的。</p>
+<p>backdoor的方案是，控制用户，利用用户的数据，参数构造模型，模拟用户数量。<br>构建模型的思路：我们提出了一种新型的后门，即语义后门，与像素后门不同，它使模型在未修改的数字输入上产生攻击者选择的输出。例如，后门图像分类模型将攻击者选择的标签分配给具有某些特征的所有图像，例如，所有紫色汽车或所有带有赛车条纹的汽车都被错误地分类为鸟（或攻击者选择的任何其他标签）。后门单词预测模型建议攻击者选择一个单词来完成某些句子。</p>
+<p>在通过估计 学习率和用户人数 模拟缩放因子，保证毒模型的存在感。</p>
+<p>相似文章，根据其误差变化点与前一个更新之间的相对距离，将每个新更新识别为“可疑的”。为此，我们依赖于局部离群因子(LOF)[6]，这是一种检测数据集中离群值的方法，通过检查一个点与其邻居的接近度与邻居自身的接近度的比较。 发送给用户多个以往的模型和本次模型，计算离群点来判断是否有问题。</p>
+<p>我的改进，1是加入一个信用值，通过每次判断是否投毒的结论，判断用户是否可信，并以此改变他的权重。对于判断是否投毒，2 相似文章采用的是离群局部因子，这就隐含了用户用于检测的的数据里面要包含trigger，但是这在数据集里是很难实现的比如60000的数据集里只有30张绿色的车，但如果投毒成功了话模型的预测值偏移就是必然的，可以类似蜂窝一样的构造典型数据（难以实现，在联邦学习中数据是隐私的），对两个模型类似计算积分的操作。</p>
+<p>其他人的解决方案：</p>
 <ol>
 <li><p>通过<strong>联邦修剪方法</strong>，我们去除了冗余神经元和“后门神经元”，它们在识别后门模式时会触发不当行为，而在输入数据干净时保持沉默。第二个可选的微调过程旨在恢复修剪对良性数据集测试准确性的损害。在最后一步中，我们通过限制输入的极值和神经网络神经元的权重来消除后门攻击。</p>
 </li>
@@ -115,7 +132,14 @@
   
 <nav id="article-nav" class="article-nav">
   
-    <span id="article-nav-newer" class="article-nav-link-wrap newer"></span>
+    <a href="/2023/04/01/techology2/" id="article-nav-newer" class="article-nav-link-wrap newer">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          尝试实验中的一些问题
+        
+      </div>
+    </a>
   
   
     <a href="/2023/03/23/paperreading5/" id="article-nav-older" class="article-nav-link-wrap older">
