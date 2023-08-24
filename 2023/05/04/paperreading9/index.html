@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Learning both Weights and Connections for Efficient Neural Networks | Foreshadowing</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+  
+  <meta name="description" content="是前一篇论文中直接使用的网络剪枝。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Learning both Weights and Connections for Efficient Neural Networks">
+<meta property="og:url" content="http://example.com/2023/05/04/paperreading9/index.html">
+<meta property="og:site_name" content="Foreshadowing">
+<meta property="og:description" content="是前一篇论文中直接使用的网络剪枝。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-05-04T08:49:59.348Z">
+<meta property="article:modified_time" content="2023-05-10T06:55:54.217Z">
+<meta property="article:author" content="Foreshadowing">
+<meta name="twitter:card" content="summary"><meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="wrapper">
+    <header id="header">
+  <h1 id="title">
+    <a href="/">Foreshadowing</a>
+  </h1>
+  <nav>
+    
+    
+      
+      <a class="nav-link" href="/">Home</a>
+    
+      
+        <span class="nav-spacer">×</span>
+      
+      <a class="nav-link" href="/archives">Archives</a>
+    
+    
+  </nav>
+</header>
+
+    <div id="content">
+      <article id="post-paperreading9" class="article article-type-post" itemprop="blogPost" itemscope>
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 class="article-title" itemprop="headline name">
+      Learning both Weights and Connections for Efficient Neural Networks
+    </h2>
+  
+
+
+        <div class="article-meta">
+          <time class="article-date" datetime="2023-05-04T08:49:59.348Z" itemprop="datePublished">五月 4, 2023, 4:49 下午</time>
+
+          
+        </div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+        <p>是前一篇论文中直接使用的网络剪枝。</p>
+<span id="more"></span>
+
+<h4 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h4><p>神经网络是过参数化的，存在显著冗余。</p>
+<p>Vanhoucke等人[11]探索了一种具有8位整数（与32位浮点）激活的定点实现。Denton等人[12]通过找到参数的适当低阶近似值并将精度保持在原始模型的1%以内，利用了神经网络的线性结构。Gong等人。[13] 使用矢量量化的压缩深度对流。这些近似和量化技术与网络修剪正交，它们可以一起使用以获得进一步的增益[14]。已经有其他尝试通过用全局平均池化代替完全连接层来减少神经网络的参数数量。网络中的网络架构[15]和GoogLenet[16]通过采用这一理念，在几个基准测试上取得了最先进的成果。</p>
+<p>存在问题：难以迁移，即重用在ImageNet数据集上学习的特征，并仅通过微调完全连接的层将其应用于新任务。Szegedy等人[16]注意到了这个问题，并促使他们在网络顶部添加线性层，以实现迁移学习。</p>
+<p>网络修剪已被用于降低网络复杂性和减少过度拟合。修剪的早期方法是有偏权重衰减[17]。最优脑损伤[18]和最优脑外科医生[19]基于损失函数的Hessian修剪网络以减少连接数量，并表明这种修剪比基于数量级的修剪（如权重衰减）更准确。然而，二阶导数需要额外的计算。</p>
+<p>HashedNets[20]是一种最近的技术，通过使用哈希函数将连接权重随机分组到哈希桶中，从而使同一哈希桶中的所有连接共享一个参数值，从而减少模型大小。这种技术可能受益于修剪。正如Shi等人在</p>
+<p>[21]和Weinberger等人[22]，稀疏性将最小化哈希冲突，使特征哈希更加有效。HashedNets可以与修剪一起使用，从而更好地节省参数。</p>
+<h3 id="作者的方案"><a href="#作者的方案" class="headerlink" title="作者的方案"></a>作者的方案</h3><p>三步：<br>1.通过正常的网络学习连接，学习哪些联系是重要的<br>2.修建连接<br>3.再次训练维护精度</p>
+<p>1.正则化</p>
+<p>L1正则化惩罚非零参数，从而导致更多接近零的参数。这在修剪后但在重新训练之前提供了更好的准确性。</p>
+<p>剩余的连接不如L2正则化，导致重新训练后的精度较低。总体而言，L2正则化给出了最好的修剪结果。</p>
+<p>2.dropout</p>
+<p>从数量上讲，设Ci为第i层中的连接数，Cio为原始网络，Cir为重新训练后的网络，Ni为第一层中的神经元数。由于脱落作用于神经元，Ci随Ni呈二次方变化，根据方程1，因此修剪参数后的脱落率应遵循方程2，其中Do表示原始脱落率，Dr代表再培训期间的辍学率。<br><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAp8AAABWCAYAAACJkP1dAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAABiMSURBVHhe7d0JUBRnwgbgRmXjtYTon6hlCpM1uiGruEo0KhAhRmNcLzwCRo2rGI1k1WgEWaPoKoIaUYMRFUXjEYIBjzUaLEWDxiuLpUhQsUAOiwlHwUANQ81MMV3v3+Ag1wxXMs0A71PVVfQ4ND1j99dvf/0dAuRU+gjbBwsQbFywPDQaP93LREFBNtLuxeKbDd74JPgGlKLhvfQUvzMiIiJqReQNnxJNynF8Pu6vsBWkQCUt1t1eweD3lyDsRi5KDe+h6vidERERUWshe/ispIdOqzf8TA3D74yIiIhatmYMn0RERETU1jB8EhEREZFsGD6JiIiISDYMn0REREQkG4ZPIiIiIpINwycRERERyYbhk4iIiIhkw/BJRERERLJh+CQiIiIi2TB8EhEREZFsGD6JiIiISDYMn0REREQkG4ZPIiIiIpINwycRERERyYbhk4iISCZKpRIZGRnNsuTl5Rn2gqh5MXwSERHJoDTjOJzHLICdnV2zLPPmzTPsCVHzYvgkIiIyOxE5ERPgvPFXwzpR28XwSUREZHYqXPIagU/iig3r9dGjpCAbeSV6w/pTem2p4Seilovhk4iIyNy097DOaTKO5xrWjdIh++e9WDHdFSNcJ8LTyxveXrPhOXs5whNVKE4IhvuMo8gSDW8naqEYPomIiMxM/2Q/3h21AykmKi7F4iQcmDsQPew9EHwlW4qhlUTldQS5u2KIbQe8viEJWsPrRC0VwycREZGZKc/OxIjPb0JtWK9KVF6D//Cu6Oz4BeLyqz9mr1B0eQF6Cr2w6GpDH9sTWS6GTyIiIrMqwS2fEfA8ozSsV6FLw6HJL0B47m2EJNdRp5kfhbF2k3Aq37BO1IIxfBIREZlTaSp2jhqNsMyatZp6KCLd8bwgwCGwnsfpytPwnLQftTZB1AIxfBIREZlTXhTcnfyRoDGsV9AkwL+/AMF6FMLrS5V6FRTZarCvEbUGDJ9ERERmVHxlMUZ4xaLIsF5Bc3cNXhMEtHf5BgqmSmpDGD6JiIjMRov7m5wx4dvsWrWWOcdc0E4Kn/387zW6B7su5QhW+h5HOof9pBaI4ZOIiMhcRAUOj3PB1odVB08qI+JJ2JsQhHZwiahnznVdGs58exdV+7mrE3Zj1fbrULLGlFoghk8iIiJzKYzBRyOW4pqRMZYKz02FjWAFp6M5hleMK765EZ8eTgcrOam1YPgkIiIyE83t1Rg5/RSMjZAk5kZjio2AHl4/QWV4rZbiOwhZtgN3KsKrJgVRm/3h6/0FojIMtan6HPwUGgi/T1Yh4s41HN6xHcEBq7HpTBYDK1kkhk8iIiKz0CM91A1uu9Oln4zR4sFON3TtNBxBd2tXjWoyYrB16WpEV4RMaHBv20LsSkxH+BAB9nsV5e1IS+KD8FlUMmKmd4Ew2B83CtW4taIv7OZdNh1qiZqRZYRPfQkKsvNQUu3s1EPLWzYiImqxCnBqxkisvl1zjKUqRBUSD3tjhJ09Jqzche/OxuJ89AFs9V0AL9+DuK2semFU49HVJBQ83o1BQn9sefT0Iql+dAW/5t3Hptc6Y3RUPe1HiSxA84VPXTZ+3rsC011HwHWiJ7y8veE12xOzl4cjUVWMhGB3zDiaZQFjmumQdnwV5ri/B1dnJ7j8YyVicqvfw2oe7MOC8e9izHvvY9zY9zBxXjBu1zkDmjm2SfSUWPQrfryYXqv3rFiUhFNhUXhU7TooXfhO/ohHJYZVIql8yjy5WiqfxpWXT07Obnh/6kzMmjULH3q4Y8LkD+G9dhfOpljuQaPLPInVc9wxztUZTk7OcHt/KmZK+z/rQw+4T5iMD73XYtfZFJj9E6ivY9nIuYgpNKzXQVRnITHuJA59/RX2HPkB8QqNietfKR4G9IXguA+ZevHZe0TFQQx7bhC+zjBex0otiYiiX3/ExfSKUrwUefFR2LV+BZb4bMTec8kornJwqBJP4scWVog3Q/gUUZx0AHMH9oC9RzCuZFftAShCeT0I7q5DYNvhdWxIauzgE2ZUFIuFQ16GtWAFx+BkqXiuTl9wFb5DhsLnvKLWv5lkjm1Sm6ZO2o/Fc/xxTlH52EBU3ceJ/3yAAV0ECN1mI7bGYIMl9w/gY4+1uFDjBojaONUlfNRdQAfnMFTNM6I6Dec3T0XfbgPxcWS6BZdNKlz6qDuEDs4Iq/4BkHZ+M6b27YaBH0ci3YwfQJf8Jd4e9weP4alLgv/LHeAWqUDqoaUISXp6N6k8OwXPv7oGiRZ02aSmUCNp/2LM8T+H8mJcLMSNDe+gR8eu6P7CcxAEqRyXlj6zIpBZUcyX3MeBjz2w9kKuieYdlkfm8CmFy2v+GN61Mxy/iEO+0W+pCJcX9ITQaxGuWlBNX0n8Rnh9HYWlfaT/+D6f41bN5jnFV+Dr9V2jChlzbJPaLt3jg/AYNhcnsqueWKXITYjHo6wb8OtrPHyW0T7cjWkTA1m7Ts9oE9ejv3SRGxScYqTTihZJgYPQvpMb9lvqQJPaRKwvmz1oUDBSjOyiNikQg9p3gtt+c/UiF5ETMQEum+qZNrOxdA+xbWRfTPHzw7KAWOSWXx80uOP7KnovuiZFF2q5dHh80APD5p5ARTFefO1zuLjvRHxh2Qsiiu9/g7llmUGwwZToXOkVA+1D7J42EYEtpBCXNXzq0g5h8gsCnns7BMl1nI35UWNhN8l478DmUYrUvV7YnKBC8rYh0n96N8w8V2D4t6c097Zg/u7atZemmWOb1GZpH2CHqx3eC88wfiHVZ2KPo+nwKd0KIX7VQAxYFodC3uwQ9Mjc9xashD74/H/GH+fpHgThDUM4tUT6zH14y0pAn8//Z/zxuu4Bgt4wHU5/PxVivUZg8RUzhAFRA2VBSWXwkOjV+VDyYtGiaR/sgKvdewjPqDggi/CT32JEPKleU6eMmY3/k869Xot+rjb2a0n8KgwcsAxxLaAQly986hWIdH9eClkOCKzncbrytCcm7c+0nOpjMQdRC33wk6rsYxzD2E4C/uR2EJVT8eqRftAL639pRJsLc2yT2igReaeno7vtZJwydcdWb/iUCr57/ujfxRFf1hoMm9qefJyc0BmCrSfOm2ivKCrCMVS6ANp+EGN4xbLkn5yAzoItPE1/AIQPlc4J2w8QY+Kc+F2097DO2R3s/0MNIubh9PTusJ1cteJNi/zMgloVULpHX2KAdO71X5dYvVZdOub8+3eB45cPLb7SSrbwqUmQLmzSl2U9KrxKwDJOr1IgW21Byb0oFss/OYWnZUghLsx9UQrRA7DpWYiWDppPluFCAxqVP2OObVLbJF1Ej7haw8pxT7W2edU0IHxCdRnzXhRgt+IX83fEIMtWfAULekrltdsxZJsoijXSzUo/qUzvNuui4RVLUowrZc23rN1wzPQHgH+/snNiFi6aIXzqn+zHGNedSDXPM31qZUTFEbhaW8FxT0a9FW9FF+egu/AqfGs9lVDh8jwpS9itgKXXW8kUPjW4u+Y1KVy1h8s3T8cl+8MV38By+06wkgrDiga5dS1WHXpi6omG3ZKWxG+AV3jaswOi5Pa/8Zq0jd7ehipvVRx8Pj5uspA2xhzbpDaq8Bym2Qiw9TgPk9fQhoTP0lTsGCS9xz4QD1j52aZpE9eVVxY4bHtksj1kbuQ7sJbeY7/pvuGVxirGjeX26GRVvWw2uVh1QM+pJww37PXQJmJdWXtPh20wjEZUW24k3rGW3mO/Cfcbe7yXFiA9r+5fUp79ECN9bvFGjhqk8Nw02Ai28Dhf351QAc7O7IGXph2HolZKLUXqjkHS+WKPQAsvxGUKnzk45tJO+kL6wf9e3Y/cjdGlHMFK3+NonnbtpUjZMx9Bd6uMTyNdpHe91R7C8+44mStCczcI80NrF9Km99sc22y40oJ4HFyzGdfMcLdP8tNn7oGjdHHuveSG6c4GDQmf0mX9O2crCN0/wiWOTN2G6ZGxd1h5e88VJqtPCnBmalkzqr749506xrBsJvqMvRhW1t6zjlr8gjNT8bx03vT99x007hOUIvPIdDj51vWEoAS3fEbiw7NKw3pt+fn5uHnzpiyLQqEw/FWyTHpk7nGUzqfeWHKj7i5j6vi1GOqwCD9U61haKe87Z+nc7Y6PLLwQlyd8ik8Q9qZ04Wvngoh6blt1aWfw7d3qDbTVCbuxavt1KJujFlDMxvcfryxvm1lJRM73E9FV6ACnPSlICffCBiON8k3utzm22RDaFET+xxerV81AL2tHhP/GatXWQJe8BX+TLqJ1Pi5vUPgsQPRoawidJ+K/pq+Z1OpVtPf0MDk+pZgTjcl/FmDttAspFljBUtHe08P0B0D05D9DsHbCrkZ+AP1v32P6C9K59GYdzVxKU7HTdQwO1OgoUtXFixfx1ltvybIcOXLE8FfJMumQvOVvUvi0q+OGTzps82Ph894shCWbvl0qiB4Na6EzJlp4IS5TzWchzk21gWDlhKM5hpeMKsbNjZ/icFOq9cQiPLh0GtHR0Q1bTvyI23kN+DtFsfhs0SnkGlafUcVhYS+pAOr/LwTO/6yOC7oR5thmI4hZYRjSkeGztRCzv8FwKXz2Wnj1aZMNYxpY8xnhZAXhpfk1boyoTSlr79mjrL3nURPNfopxy6cfhPZ/h3/87xnYR0TRg0s4bax8NrqcwI+382o9DaqtrL1nj/L2nkdNtFsqvuWDfkJ7/N0/vnFDE+lzcX7jKqx07gjBZhrOmWqTnxcFd+f1aMKDPmqTRGR/M1wKn72w0NQYk+pE7J73T4QkmCzly+VFOMFKeAnzLbwQlyl8isiNngIboQe86vhCiu+EYNmOO5WFgSYFUZv94ev9BaKezW1rgiYRIXPHY8yYMQ1bxk7DmrjqQxsZU/K/DZh/IM1IgadF4vrXpYNFQPfxkcipWsbVs9/m2GZjMHy2MuobWPKygI7jTsLkEd2Q8KlLxtYBZTU6oUg3XWFDrVxFe8+BRtt7ilBe9YND555wD0+t7Gmrz8FPoYHw+2QVIu5cw+Ed2xEcsBqbzmTVERY1SAyZi/HGymejy1hMWxNn+hivUNHec6Dx9p6i8ir8HDqjp3s4UmuGQ10WLu3egIAtQViz3Beh1/Oqdf7QpkQi5EIWHpW3q/uLySYHxVcWY+SCS5xXnRpMfWMJXhY6YtxJI0e4NgWHF8/Fl7eKpDOwkj7vJk7dqjrEiQ7JWwdIx+abCLXwQlym8CnRPsBOt67oNDwId2vdamqQEbMVS1dHozJXaXBv20LsSkxH+BAB9nvN1FGpTtId/pp/4PNrxu+NS9P3wcVawN93pFYpYOvbb3Nss3EYPlsbFS7PfwlCv7VIMPU0piJY2s7EBVPhsygGHrbtMGDT/erDd1Abokd66FDp4mWH5bdqPP7TPEHcV7MwoPdQeH+fVu0YKYkPwmdRyYiZ3gXCYH/cKFTj1oq+sJt3WfYApk8PLR8Cym55zc4+GjyJ+wqzBvTGUO/vkVbzIC/+BetdHeB58JH0Tqmc/C0C4/qMx9Gs2hdx9TVv9BbaYUS4sSmgtUja5IKJETnNcM2iFkt1GfNfEtBvbUL58fdM6RN8P38gHDxWI3DzZmw2LIHrPsMHLmOxvdrQeEWI8bBFuwGbcN/CC3H5wqdEVCXisPcI2NlPwMpd3+Fs7HlEH9gK3wVe8D14G8pq57gaj64moeDxbgwS+mOLyS6L5qBF6tGlmOL8GrpKhVjHPsMxY9PN2oWomI8z80bDv9rdr6n9Nsc2NYhfPRCdpO1V6xVaZWnXdSi+fFD9KGT4bH209zdjsI0jdtYa10UP5Z1IBK+cJN1Vlx0T3TFmWRDCzmfWGgdOff1fsLMdg8N1tFOj1kqHtOM+8BzvjP4dy46TLhg86el87rNmzsCUCeMwetRoePqF40Zu7bJY/egKfs27j02vdcboZhrYUpd2HD6e4+Hcv2N52ddl8KSn87nPmokZUyZg3OhRGO3ph/AbuUZqY9W4ufwV2Lz7LZ4Vi6qL8LTthlnGOm7kfY8xzwl4YeaF2iNMiAocHjcK25J/3xMq6EtQkJ2Hkmqnox7a2jtPrYIW9zcPho1jleG5RCXiVtibHMXH+u0D1YeuVF/Hv+xsMebwk2o19pZI1vD5lAh1ViLiTh7C11/twZEf4qHQmApBpXgY0BeC4z7pCxZb0F2kOfbb+Db16hxkpj/G48fGl/TMPGhqHIUMn62RCrfWjsAw/zt19MCtg/4Jjk3pC9ftD6rVaBE1lKg4iGHPDcLXJnvhWDBNPHx6CxgcVlmTqUtaj7+0d8AOYwN16h5iy9+kANB/Xe251AtjMHfkZ7jeqMakBrps/Lx3Baa7joDrRE94eXvDa7YnZi8PR6KqGAnB7phx1FhtK7UKqltYO2IY/O80pRTX48mxKejruh016pssUjOEz0bQJcH/5Q5wi1Qg9dBShCSZeqZoYcyx33/gNsUn+56GT04a37pok7Hvo6kIuK5s5MVJh8zI+XBbEInM31lZQ22X8uwUPP/qmtphrCUoTUWwgy3GnTK0t9Nn49QcO7yx8pqJsXOLEefVA0KHt3Gkxk285vZqOM04XX/b1GpEFCcdwNyBPWDvEYwr2VVPRBHK60Fwdx0C2w6vY0M9MwRSy6ZN3oePpgbgeiOHtNFlRmK+2wJEtpBC3MLD50NsG9kXU/z8sCwgFrktJSuZY7//iG2WKnB+mw8Wf/AmbITnMcxjMXy3xUDBxzitR3ECQhfOxcbYnAY+dtEgNdIPi9b/t0p7a6LG0uCO76vovehaZYfRFkVEwZW1mDh+EbaEhSJgiQfmBFyAwuQ5ISL7WzdYCy/in5erPpYvazP7Dt5pwCw1laRwec0fw7t2huMXccg3+otFuFw2Y1OvRTDVGZpaj+KEUCycuxGxOQ0sxVMj4bdoPf7bggpxyw6fZUQNlAUl0unZwphjv1vqd0HyElXITC9s4MVPi9yM/FrtP4kaS6/Oh7KlH0h6NXKy8mCyJVgV2qQN+KsgwD7wQZXzpwCnZjhhTSMG3telHcLkFwQ893YIkuuo1MyPGgu7SVXn/abWTFRlIr2wgaV4bgbyW9i5Z/nhk4iIyNKoYjGnu4A/jY6sHLNZfQ3LRv7T9IgSNekViHQvmynKAYH1PE5XnvbEpP2ZjahRJbJcDJ9ERESNJSpwyKk9hJ4Lnz0K1yV/ibffP1zZY74emgT/8jFVrUeFV++1bIRepUC2ms+9qHVg+CQiImo0DRLWvAZBGIht5cPficiJmAiXwPsNbMaiwd3y328Pl28aP3azLuUIVvoeR1MmBCRqbgyfRERETVAY8wFsy2aliS5rialCrNdIfNrgHkE5OObSTgqf/eDfhHk41Qm7sWr7dTSyUzSRRWD4JCIiagJ9ZhiGWQnoveQG1Jp7WOfsjgaPsS8+QdibAoR2Loio53d0aWfw7V12c6fWg+GTiIioKUri4fOKFCAHhyAlfT/GuIXgcYMfgxfi3FQbCFZOOJpjeMmoYtzc+CkOVzxf16QgarM/fL2/QFSNoXV0WZewe0MAtgStwXLfUFzPY/ckskwMn0RERE2ixJkpXSF0mYRjER/CyfeXRswwJiI3egpshB7w+sn0DPjFd0KwbMcdw/ipGtzbthC7EtMRPkSA/d7KtqLFv6yHq4MnDj4qG+ZJxG8R49Bn/FEYmZqeqNkxfBIRETWJHmlfD4Eg9MLY9x0x61yh4fUG0j7ATreu6DQ8CHdrjc6vQUbMVixdHV1lAgg1Hl1NQsHj3Rgk9MeW8o5OZS/fxPJXbPDut789C6Oqi56w7TYLxqamJ2puDJ9ERERNpL65FC8LAgRrJ4RnNb73j6hKxGHvEbCzn4CVu77D2djziD6wFb4LvOB78DaUtWouS/EwoC8Ex33I1IvlYVMT74PewmCEPfv7OiSt/wvaO+yAsanpiZobwycREVFT5Z/A+E5S+Oy/7nfMay9CnZWIuJOH8PVXe3Dkh3goTE2zpEuC/8sd4BapQOqhpQhJ0qA0NRgOtuNQOTX9KcyxewMrrzV0tHsieTF8EhERNVVpCoId2uPFeZchyxNu3UNsG9kXU/z8sCwgFrllGVUswJW1EzF+0RaEhQZgicccBFxQcNpcslgMn0RERE2mxq3V47HoXP6z9pZmJ2qgLCip9ff06hxk5Wnk2w+iJmL4JCIiIiLZMHwSERERkWwYPomIiIhINgyfRERERCQbhk8iIiIikg3DJxERERHJhuGTiIiIiGTD8ElEREREsmH4JCIiIiLZMHwSERERkWwYPomIiIhINgyfRERERCQbhk8iIiIikg3DJxERERHJhuGTiIiIiGTD8ElEREREsmH4JCIiIiLZMHwSERERkWwYPomIiIhINgyfRERERCQbhk8iIiIikg3DJxERERHJhuGTiIiIiGQC/D+bOnkpkipYUAAAAABJRU5ErkJggg==" alt="avatar"></p>
+<p>3.局部修剪和参数自适应</p>
+<p>在重新训练过程中，保留修剪后连接的初始训练阶段的权重比重新初始化修剪后的层更好。细胞神经网络包含脆弱的协同适应特征[24]：当网络最初被训练时，梯度下降能够找到一个很好的解决方案，但在重新初始化一些层并对其进行再训练之后就不能了。因此，当我们重新训练修剪后的层时，我们应该保留保留的参数，而不是重新初始化它们。</p>
+<p>4.迭代修剪</p>
+<p>学习正确的连接是一个迭代的过程。修剪之后再训练是一次迭代，在多次这样的迭代之后，可以找到最小数量的连接。在不损失准确性的情况下，与单步激进修剪相比，该方法可以将AlexNet上的修剪率从5倍提高到9倍。每一次迭代都是一次贪婪的搜索，因为我们可以找到最好的连接。我们还根据参数的绝对值对其进行了概率修剪实验，但结果更糟。</p>
+<p>5.修剪神经元</p>
+<p>修剪连接后，可以安全地修剪具有零输入连接或零输出连接的神经元。这种修剪是通过移除与修剪后的神经元之间的所有连接来进一步实现的。</p>
+<p>再训练阶段自动得出死亡神经元将同时具有零输入连接和零输出连接的结果。这是由于梯度下降和正则化造成的。</p>
+<p>具有零输入连接（或零输出连接）的神经元对最终损失没有贡献，导致其输出连接（或输入连接）的梯度分别为零。只有正则化项才会将权重推到零。因此，在再训练过程中，死亡的神经元将被自动移除。</p>
+
+      
+    </div>
+    
+    
+    
+  </div>
+</article>
+
+  
+<nav id="article-nav" class="article-nav">
+  
+    <a href="/2023/05/31/techology6/" id="article-nav-newer" class="article-nav-link-wrap newer">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          安装TFHE
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2023/05/04/paperreading8/" id="article-nav-older" class="article-nav-link-wrap older">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">
+        
+          DEEP COMPRESSION:COMPRESSING DEEP NEURAL NETWORKS WITH PRUNING, TRAINED QUANTIZATION AND HUFFMAN CODING
+        
+      </div>
+    </a>
+  
+</nav>
+
+
+
+
+
+
+    </div>
+  </div>
+  
+
+
+
+
+<div id="settings-container">
+  <div id="dark-mode">dark</div>
+  <div id="sans-font">sans</div>
+</div>
+<script type="text/javascript">
+let d=document,r=d.documentElement.style,f=r.setProperty.bind(r),l=localStorage,s=l.getItem('s')||(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches),n=l.getItem('n'),m=d.getElementById("dark-mode"),b=()=>{f('--bg-color','#fafafa');f('--code-bg-color','#f4f4f4');f('--text-color','#212121');f('--secondary-color','#808080');f('--tertiary-color','#b0b0b0');f('--link-color','#b5c8cf');f('--link-hover-color','#618794');f('--link-bg-color','#dae4e7');f('--selection-color','#dae4e7');m.innerHTML="dark"},c=()=>{f('--bg-color','#212121');f('--code-bg-color','#292929');f('--text-color','#fff');f('--secondary-color','#c0c0c0');f('--tertiary-color','#6e6e6e');f('--link-color','#4d6b75');f('--link-hover-color','#96b1bb');f('--link-bg-color','#5d828e');f('--selection-color','#acc1c9');m.innerHTML="light"},o=d.getElementById("sans-font"),e=()=>{f('--body-stack','"Lora", "Georgia", "Times New Roman", serif');o.innerHTML="sans"},g=()=>{f('--body-stack','"Lato", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "Verdana", sans-serif');o.innerHTML="serif"};m.onclick=()=>{if(s==2){s=1;l.setItem('s',s);c()}else{s=2;l.setItem('s',s);b()}};o.onclick=()=>{if(n==2){n=1;l.setItem('n',n);g()}else{n=2;l.setItem('n',n);e()}};if(!s){s=2;l.setItem('s',2)};if(s==1){c()};if(!n){n=2;l.setItem('n',2)};if(n==1){g()};
+</script>
+
+
+
+
+</body>
+</html>

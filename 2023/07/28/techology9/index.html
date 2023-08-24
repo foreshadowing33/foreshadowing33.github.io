@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>rust和c混编 + 运行rust-rs | Foreshadowing</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+  
+  <meta name="description" content="学点有的没的。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="rust和c混编 + 运行rust-rs">
+<meta property="og:url" content="http://example.com/2023/07/28/techology9/index.html">
+<meta property="og:site_name" content="Foreshadowing">
+<meta property="og:description" content="学点有的没的。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-07-28T08:51:26.761Z">
+<meta property="article:modified_time" content="2023-08-02T03:50:50.339Z">
+<meta property="article:author" content="Foreshadowing">
+<meta name="twitter:card" content="summary"><meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="wrapper">
+    <header id="header">
+  <h1 id="title">
+    <a href="/">Foreshadowing</a>
+  </h1>
+  <nav>
+    
+    
+      
+      <a class="nav-link" href="/">Home</a>
+    
+      
+        <span class="nav-spacer">×</span>
+      
+      <a class="nav-link" href="/archives">Archives</a>
+    
+    
+  </nav>
+</header>
+
+    <div id="content">
+      <article id="post-techology9" class="article article-type-post" itemprop="blogPost" itemscope>
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 class="article-title" itemprop="headline name">
+      rust和c混编 + 运行rust-rs
+    </h2>
+  
+
+
+        <div class="article-meta">
+          <time class="article-date" datetime="2023-07-28T08:51:26.761Z" itemprop="datePublished">七月 28, 2023, 4:51 下午</time>
+
+          
+        </div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+        <p>学点有的没的。</p>
+<span id="more"></span>
+
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/358840611">https://zhuanlan.zhihu.com/p/358840611</a></p>
+<p>ubuntu安装rust环境</p>
+<p>sudo curl <a target="_blank" rel="noopener" href="https://sh.rustup.rs/">https://sh.rustup.rs</a> -sSf | sh</p>
+<p>输入 1 </p>
+<p>source $HOME&#x2F;.cargo&#x2F;env</p>
+<p>cargo –version</p>
+<p>rustc –version</p>
+<p>cat .cargo&#x2F;env</p>
+<p>rustc main.rs</p>
+<p>.&#x2F;main.rs</p>
+<h3 id="新建-amp-运行rust代码"><a href="#新建-amp-运行rust代码" class="headerlink" title="新建 &amp; 运行rust代码"></a>新建 &amp; 运行rust代码</h3><p>cargo new test-rust</p>
+<p>cd .&#x2F;test-rust</p>
+<p>cargo build </p>
+<p>cargo run</p>
+<p>那么这是就会运行 rust hello 代码</p>
+<p>在Cargo.toml里面加入</p>
+<p>tfhe &#x3D; { version &#x3D; “0.3.0”, features &#x3D; [ “boolean”, “shortint”, “integer”, “x86_64-unix” ] }</p>
+<p>与tfhe相关的rust代码就可以正常运行了</p>
+<h3 id="c-api"><a href="#c-api" class="headerlink" title="c api"></a>c api</h3><p>在tfhe-rs-main&#x2F;tfhe-rs-main&#x2F;tfhe下打开terminal，运行</p>
+<p>RUSTFLAGS&#x3D;”-C target-cpu&#x3D;native” cargo +nightly build –release –features&#x3D;x86_64-unix,high-level-c-api -p tfhe</p>
+<p>进target&#x2F;release</p>
+<p>用 pwq 命令可以拿到绝对地址</p>
+<p>然后随便新建一个文件夹  生成一个CMakeList.txt 和 main.c</p>
+<pre><code>project(my-project)
+
+cmake_minimum_required(VERSION 3.16)
+
+set(TFHE_C_API &quot;/path/to/tfhe-rs/binaries/and/header&quot;)
+
+include_directories($&#123;TFHE_C_API&#125;)
+add_library(tfhe STATIC IMPORTED)
+set_target_properties(tfhe PROPERTIES IMPORTED_LOCATION $&#123;TFHE_C_API&#125;/libtfhe.a)
+
+if(APPLE)
+    find_library(SECURITY_FRAMEWORK Security)
+    if (NOT SECURITY_FRAMEWORK)
+        message(FATAL_ERROR &quot;Security framework not found&quot;)
+    endif()
+endif()
+
+set(EXECUTABLE_NAME my-executable)
+add_executable($&#123;EXECUTABLE_NAME&#125; main.c)
+target_include_directories($&#123;EXECUTABLE_NAME&#125; PRIVATE $&#123;CMAKE_CURRENT_SOURCE_DIR&#125;)
+target_link_libraries($&#123;EXECUTABLE_NAME&#125; LINK_PUBLIC tfhe m pthread dl)
+if(APPLE)
+    target_link_libraries($&#123;EXECUTABLE_NAME&#125; LINK_PUBLIC $&#123;SECURITY_FRAMEWORK&#125;)
+endif()
+target_compile_options($&#123;EXECUTABLE_NAME&#125; PRIVATE -Werror)
+</code></pre>
+<p>第三行的代码改成上面的绝对地址</p>
+<p>&#x2F;home&#x2F;huangshan&#x2F;tfhe-rs-0.3.0&#x2F;tfhe-rs-0.3.0&#x2F;target&#x2F;release</p>
+<p>然后main.c</p>
+<pre><code>#include &quot;tfhe.h&quot;
+#include &lt;assert.h&gt;
+#include &lt;inttypes.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;tgmath.h&gt;
+
+void test_default_keygen_w_serde(void) &#123;
+BooleanClientKey *cks = NULL;
+BooleanServerKey *sks = NULL;
+BooleanCiphertext *ct = NULL;
+Buffer ct_ser_buffer = &#123;.pointer = NULL, .length = 0&#125;;
+BooleanCiphertext *deser_ct = NULL;
+BooleanCompressedCiphertext *cct = NULL;
+BooleanCompressedCiphertext *deser_cct = NULL;
+BooleanCiphertext *decompressed_ct = NULL;
+
+int gen_keys_ok = boolean_gen_keys_with_default_parameters(&amp;cks, &amp;sks);
+assert(gen_keys_ok == 0);
+
+int encrypt_ok = boolean_client_key_encrypt(cks, true, &amp;ct);
+assert(encrypt_ok == 0);
+
+int ser_ok = boolean_serialize_ciphertext(ct, &amp;ct_ser_buffer);
+assert(ser_ok == 0);
+
+BufferView deser_view = &#123;.pointer = ct_ser_buffer.pointer, .length = ct_ser_buffer.length&#125;;
+
+int deser_ok = boolean_deserialize_ciphertext(deser_view, &amp;deser_ct);
+assert(deser_ok == 0);
+
+assert(deser_view.length == ct_ser_buffer.length);
+for (size_t idx = 0; idx &lt; deser_view.length; ++idx) &#123;
+    assert(deser_view.pointer[idx] == ct_ser_buffer.pointer[idx]);
+&#125;
+
+bool result = false;
+int decrypt_ok = boolean_client_key_decrypt(cks, deser_ct, &amp;result);
+assert(decrypt_ok == 0);
+
+assert(result == true);
+
+int c_encrypt_ok = boolean_client_key_encrypt_compressed(cks, true, &amp;cct);
+assert(c_encrypt_ok == 0);
+
+int c_ser_ok = boolean_serialize_compressed_ciphertext(cct, &amp;ct_ser_buffer);
+assert(c_ser_ok == 0);
+
+deser_view.pointer = ct_ser_buffer.pointer;
+deser_view.length = ct_ser_buffer.length;
+
+int c_deser_ok = boolean_deserialize_compressed_ciphertext(deser_view, &amp;deser_cct);
+assert(c_deser_ok == 0);
+
+int decomp_ok = boolean_decompress_ciphertext(cct, &amp;decompressed_ct);
+assert(decomp_ok == 0);
+
+bool c_result = false;
+int c_decrypt_ok = boolean_client_key_decrypt(cks, decompressed_ct, &amp;c_result);
+assert(c_decrypt_ok == 0);
+
+assert(c_result == true);
+
+boolean_destroy_client_key(cks);
+boolean_destroy_server_key(sks);
+boolean_destroy_ciphertext(ct);
+boolean_destroy_ciphertext(deser_ct);
+boolean_destroy_compressed_ciphertext(cct);
+boolean_destroy_compressed_ciphertext(deser_cct);
+boolean_destroy_ciphertext(decompressed_ct);
+destroy_buffer(&amp;ct_ser_buffer);
+&#125;
+
+void test_predefined_keygen_w_serde(void) &#123;
+BooleanClientKey *cks = NULL;
+BooleanServerKey *sks = NULL;
+
+int gen_keys_ok =
+    boolean_gen_keys_with_parameters(BOOLEAN_PARAMETERS_SET_DEFAULT_PARAMETERS, &amp;cks, &amp;sks);
+
+assert(gen_keys_ok == 0);
+
+boolean_destroy_client_key(cks);
+boolean_destroy_server_key(sks);
+
+gen_keys_ok =
+    boolean_gen_keys_with_parameters(BOOLEAN_PARAMETERS_SET_TFHE_LIB_PARAMETERS, &amp;cks, &amp;sks);
+
+assert(gen_keys_ok == 0);
+
+boolean_destroy_client_key(cks);
+boolean_destroy_server_key(sks);
+&#125;
+
+void test_custom_keygen(void) &#123;
+BooleanClientKey *cks = NULL;
+BooleanServerKey *sks = NULL;
+BooleanParameters params = &#123;
+    .lwe_dimension = 10,
+    .glwe_dimension = 1,
+    .polynomial_size = 1024,
+    .lwe_modular_std_dev = 10e-100,
+    .glwe_modular_std_dev = 10e-100,
+    .pbs_base_log = 3,
+    .pbs_level = 1,
+    .ks_base_log = 4,
+    .ks_level = 2,
+&#125;;
+
+int gen_keys_ok = boolean_gen_keys_with_parameters(params, &amp;cks, &amp;sks);
+
+assert(gen_keys_ok == 0);
+
+boolean_destroy_client_key(cks);
+boolean_destroy_server_key(sks);
+&#125;
+
+void test_public_keygen(void) &#123;
+BooleanClientKey *cks = NULL;
+BooleanPublicKey *pks = NULL;
+BooleanCiphertext *ct = NULL;
+
+int gen_keys_ok = boolean_gen_client_key(BOOLEAN_PARAMETERS_SET_DEFAULT_PARAMETERS, &amp;cks);
+assert(gen_keys_ok == 0);
+
+int gen_pks = boolean_gen_public_key(cks, &amp;pks);
+assert(gen_pks == 0);
+
+bool msg = true;
+
+int encrypt_ok = boolean_public_key_encrypt(pks, msg, &amp;ct);
+assert(encrypt_ok == 0);
+
+bool result = false;
+int decrypt_ok = boolean_client_key_decrypt(cks, ct, &amp;result);
+assert(decrypt_ok == 0);
+
+assert(result == true);
+
+boolean_destroy_client_key(cks);
+boolean_destroy_public_key(pks);
+boolean_destroy_ciphertext(ct);
+&#125;
+
+int main(void) &#123;
+test_default_keygen_w_serde();
+test_predefined_keygen_w_serde();
+test_custom_keygen();
+test_public_keygen();
+return EXIT_SUCCESS;
+&#125;
+</code></pre>
+<p>最后运行</p>
+<pre><code># /!\ Be sure to update CMakeLists.txt to give the absolute path to the compiled tfhe library
+$ ls
+CMakeLists.txt  main.c
+$ mkdir build &amp;&amp; cd build
+$ cmake .. -DCMAKE_BUILD_TYPE=RELEASE
+...
+$ make
+...
+$ ./my-executable
+Result: 2
+$
+</code></pre>
+<p><a target="_blank" rel="noopener" href="https://docs.zama.ai/tfhe-rs/how-to/c_api">https://docs.zama.ai/tfhe-rs/how-to/c_api</a></p>
+
+      
+    </div>
+    
+    
+    
+  </div>
+</article>
+
+  
+<nav id="article-nav" class="article-nav">
+  
+    <a href="/2023/07/31/techology10/" id="article-nav-newer" class="article-nav-link-wrap newer">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          rust-rs语法学习
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2023/07/18/techology8/" id="article-nav-older" class="article-nav-link-wrap older">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">
+        
+          TFHE实验
+        
+      </div>
+    </a>
+  
+</nav>
+
+
+
+
+
+
+    </div>
+  </div>
+  
+
+
+
+
+<div id="settings-container">
+  <div id="dark-mode">dark</div>
+  <div id="sans-font">sans</div>
+</div>
+<script type="text/javascript">
+let d=document,r=d.documentElement.style,f=r.setProperty.bind(r),l=localStorage,s=l.getItem('s')||(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches),n=l.getItem('n'),m=d.getElementById("dark-mode"),b=()=>{f('--bg-color','#fafafa');f('--code-bg-color','#f4f4f4');f('--text-color','#212121');f('--secondary-color','#808080');f('--tertiary-color','#b0b0b0');f('--link-color','#b5c8cf');f('--link-hover-color','#618794');f('--link-bg-color','#dae4e7');f('--selection-color','#dae4e7');m.innerHTML="dark"},c=()=>{f('--bg-color','#212121');f('--code-bg-color','#292929');f('--text-color','#fff');f('--secondary-color','#c0c0c0');f('--tertiary-color','#6e6e6e');f('--link-color','#4d6b75');f('--link-hover-color','#96b1bb');f('--link-bg-color','#5d828e');f('--selection-color','#acc1c9');m.innerHTML="light"},o=d.getElementById("sans-font"),e=()=>{f('--body-stack','"Lora", "Georgia", "Times New Roman", serif');o.innerHTML="sans"},g=()=>{f('--body-stack','"Lato", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "Verdana", sans-serif');o.innerHTML="serif"};m.onclick=()=>{if(s==2){s=1;l.setItem('s',s);c()}else{s=2;l.setItem('s',s);b()}};o.onclick=()=>{if(n==2){n=1;l.setItem('n',n);g()}else{n=2;l.setItem('n',n);e()}};if(!s){s=2;l.setItem('s',2)};if(s==1){c()};if(!n){n=2;l.setItem('n',2)};if(n==1){g()};
+</script>
+
+
+
+
+</body>
+</html>

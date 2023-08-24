@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>pytorch学习 | Foreshadowing</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+  
+  <meta name="description" content="pytorch已经用了很久了，但是之前并不怎么需要自己写，方向原因只需要跑一些现成的简单代码，能看懂网络结构和各个参数的意思就行，这次轮到我自己写了，发现里面有很多细节，好好学习一下吧。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pytorch学习">
+<meta property="og:url" content="http://example.com/2023/08/23/techology11/index.html">
+<meta property="og:site_name" content="Foreshadowing">
+<meta property="og:description" content="pytorch已经用了很久了，但是之前并不怎么需要自己写，方向原因只需要跑一些现成的简单代码，能看懂网络结构和各个参数的意思就行，这次轮到我自己写了，发现里面有很多细节，好好学习一下吧。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-08-23T02:56:37.442Z">
+<meta property="article:modified_time" content="2023-08-24T06:13:53.286Z">
+<meta property="article:author" content="Foreshadowing">
+<meta name="twitter:card" content="summary"><meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="wrapper">
+    <header id="header">
+  <h1 id="title">
+    <a href="/">Foreshadowing</a>
+  </h1>
+  <nav>
+    
+    
+      
+      <a class="nav-link" href="/">Home</a>
+    
+      
+        <span class="nav-spacer">×</span>
+      
+      <a class="nav-link" href="/archives">Archives</a>
+    
+    
+  </nav>
+</header>
+
+    <div id="content">
+      <article id="post-techology11" class="article article-type-post" itemprop="blogPost" itemscope>
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 class="article-title" itemprop="headline name">
+      pytorch学习
+    </h2>
+  
+
+
+        <div class="article-meta">
+          <time class="article-date" datetime="2023-08-23T02:56:37.442Z" itemprop="datePublished">八月 23, 2023, 10:56 上午</time>
+
+          
+        </div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+        <p>pytorch已经用了很久了，但是之前并不怎么需要自己写，方向原因只需要跑一些现成的简单代码，能看懂网络结构和各个参数的意思就行，这次轮到我自己写了，发现里面有很多细节，好好学习一下吧。</p>
+<span id="more"></span>
+
+<p>tensor什么的肯定是会的，函数也可以现查，从dataset开始吧。</p>
+<h3 id="数据预处理"><a href="#数据预处理" class="headerlink" title="数据预处理"></a>数据预处理</h3><p>pytorch提供了torch.utils.data.DataLoader和torch.uutils.data.data用于预处理数据。</p>
+<p>以FashionMNIST为例</p>
+<pre><code>import torch
+from torch.utils.data import Dataset
+from torchvision import datasets
+from torchvision.transforms import ToTensor
+import matplotlib.pyplot as plt
+
+
+training_data = datasets.FashionMNIST(
+    root=&quot;data&quot;,
+    train=True,
+    download=True,
+    transform=ToTensor()
+)
+
+test_data = datasets.FashionMNIST(
+    root=&quot;data&quot;,
+    train=False,
+    download=True,
+    transform=ToTensor()
+)
+</code></pre>
+<p>root用于指向数据地址，train用于标注是否用于训练（bn层有影响），download<br>没下载的用true下载一下，tranform设置标签转化。</p>
+<p>CustomImageDataset可以帮助我们使用自定义数据集，需要定义这三个函数__init__, <strong>len</strong>, and <strong>getitem</strong>. </p>
+<pre><code>import os
+import pandas as pd
+from torchvision.io import read_image
+
+class CustomImageDataset(Dataset):
+    def __init__(self, annotations_file, img_dir, transform=None, target_transform=None):
+        self.img_labels = pd.read_csv(annotations_file)
+        self.img_dir = img_dir
+        self.transform = transform
+        self.target_transform = target_transform
+
+    def __len__(self):
+        return len(self.img_labels)
+
+    def __getitem__(self, idx):
+        img_path = os.path.join(self.img_dir, self.img_labels.iloc[idx, 0])
+        image = read_image(img_path)
+        label = self.img_labels.iloc[idx, 1]
+        if self.transform:
+            image = self.transform(image)
+        if self.target_transform:
+            label = self.target_transform(label)
+        return image, label
+</code></pre>
+<p>annotations_file长这样</p>
+<pre><code>tshirt1.jpg, 0
+tshirt2.jpg, 0
+......
+ankleboot999.jpg, 9
+</code></pre>
+<p>__len__返回图片数量</p>
+<p>__getitem__属于组合图片和标签并转化为张量。</p>
+<p>训练前处理数据，通常是分批次（batchsize），打乱顺序重排（shuffle）等操作。</p>
+<pre><code>from torch.utils.data import DataLoader
+
+train_dataloader = DataLoader(training_data, batch_size=64, shuffle=True)
+test_dataloader = DataLoader(test_data, batch_size=64, shuffle=True)
+</code></pre>
+<p>对于图片和标签本身的性质，torchvision提供了transform和target-transform用于处理归一化等操作</p>
+<pre><code>import torch
+from torchvision import datasets
+from torchvision.transforms import ToTensor, Lambda
+
+ds = datasets.FashionMNIST(
+    root=&quot;data&quot;,
+    train=True,
+    download=True,
+    transform=ToTensor(),
+    target_transform=Lambda(lambda y: torch.zeros(10, dtype=torch.float).scatter_(0, torch.tensor(y), value=1))
+)
+</code></pre>
+
+      
+    </div>
+    
+    
+    
+  </div>
+</article>
+
+  
+<nav id="article-nav" class="article-nav">
+  
+    <span id="article-nav-newer" class="article-nav-link-wrap newer"></span>
+  
+  
+    <a href="/2023/08/21/paperreading14/" id="article-nav-older" class="article-nav-link-wrap older">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">
+        
+          ReCU Reviving the Dead Weights in Binary Neural Networks
+        
+      </div>
+    </a>
+  
+</nav>
+
+
+
+
+
+
+    </div>
+  </div>
+  
+
+
+
+
+<div id="settings-container">
+  <div id="dark-mode">dark</div>
+  <div id="sans-font">sans</div>
+</div>
+<script type="text/javascript">
+let d=document,r=d.documentElement.style,f=r.setProperty.bind(r),l=localStorage,s=l.getItem('s')||(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches),n=l.getItem('n'),m=d.getElementById("dark-mode"),b=()=>{f('--bg-color','#fafafa');f('--code-bg-color','#f4f4f4');f('--text-color','#212121');f('--secondary-color','#808080');f('--tertiary-color','#b0b0b0');f('--link-color','#b5c8cf');f('--link-hover-color','#618794');f('--link-bg-color','#dae4e7');f('--selection-color','#dae4e7');m.innerHTML="dark"},c=()=>{f('--bg-color','#212121');f('--code-bg-color','#292929');f('--text-color','#fff');f('--secondary-color','#c0c0c0');f('--tertiary-color','#6e6e6e');f('--link-color','#4d6b75');f('--link-hover-color','#96b1bb');f('--link-bg-color','#5d828e');f('--selection-color','#acc1c9');m.innerHTML="light"},o=d.getElementById("sans-font"),e=()=>{f('--body-stack','"Lora", "Georgia", "Times New Roman", serif');o.innerHTML="sans"},g=()=>{f('--body-stack','"Lato", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "Verdana", sans-serif');o.innerHTML="serif"};m.onclick=()=>{if(s==2){s=1;l.setItem('s',s);c()}else{s=2;l.setItem('s',s);b()}};o.onclick=()=>{if(n==2){n=1;l.setItem('n',n);g()}else{n=2;l.setItem('n',n);e()}};if(!s){s=2;l.setItem('s',2)};if(s==1){c()};if(!n){n=2;l.setItem('n',2)};if(n==1){g()};
+</script>
+
+
+
+
+</body>
+</html>

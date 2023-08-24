@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>A Survey on Federated Learning Systems Vision, Hype and Reality for Data Privacy and Protection | Foreshadowing</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+  
+  <meta name="description" content="这篇综述之前已经看过了，但是还是反复学习一下。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="A Survey on Federated Learning Systems Vision, Hype and Reality for Data Privacy and Protection">
+<meta property="og:url" content="http://example.com/2023/03/16/paperreading2/index.html">
+<meta property="og:site_name" content="Foreshadowing">
+<meta property="og:description" content="这篇综述之前已经看过了，但是还是反复学习一下。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-03-16T09:11:13.932Z">
+<meta property="article:modified_time" content="2023-03-19T11:57:45.380Z">
+<meta property="article:author" content="Foreshadowing">
+<meta name="twitter:card" content="summary"><meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="wrapper">
+    <header id="header">
+  <h1 id="title">
+    <a href="/">Foreshadowing</a>
+  </h1>
+  <nav>
+    
+    
+      
+      <a class="nav-link" href="/">Home</a>
+    
+      
+        <span class="nav-spacer">×</span>
+      
+      <a class="nav-link" href="/archives">Archives</a>
+    
+    
+  </nav>
+</header>
+
+    <div id="content">
+      <article id="post-paperreading2" class="article article-type-post" itemprop="blogPost" itemscope>
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 class="article-title" itemprop="headline name">
+      A Survey on Federated Learning Systems Vision, Hype and Reality for Data Privacy and Protection
+    </h2>
+  
+
+
+        <div class="article-meta">
+          <time class="article-date" datetime="2023-03-16T09:11:13.932Z" itemprop="datePublished">三月 16, 2023, 5:11 下午</time>
+
+          
+        </div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+        <p>这篇综述之前已经看过了，但是还是反复学习一下。</p>
+<span id="more"></span>
+
+<p>本文从数据分布、机器学习模型、隐私机制、通信架构、联邦规模和联邦动机来解说联邦学习。</p>
+<h3 id="背景知识积累："><a href="#背景知识积累：" class="headerlink" title="背景知识积累："></a>背景知识积累：</h3><p>数据孤岛现象。</p>
+<p>General Data Protection Regulation (GDPR) [9]。<br>随着数据泄露成为一个主要问题，越来越多的政府制定法规来保护用户的数据，如欧盟的GDPR[170]、新加坡的PDPA[37]和美国的CCPA[1]。</p>
+<p>在2016年60万司机的个人信息被泄露的事件中，优步不得不支付1.48亿美元来解决调查[3]。新加坡政府因违反PDPA规定，对SingHealth处以75万美元罚款[5]。谷歌因违反GDPR被罚款5700万美元[4]，这是截至2020年3月18日欧盟隐私法规定的最大罚款。</p>
+<p>[191]介绍了FL的基本原理和概念，并进一步提出了一个全面的安全FL框架。<br>[101]总结了FL在大规模移动和边缘设备网络中的挑战和未来方向。<br>[77]从不同的研究主题对外语的特点和挑战进行了全面的描述。然而，他们主要关注跨设备FL，其中参与者是大量的移动或物联网设备。<br>[10]总结了联合学习的平台、协议和应用。一些调查只关注联合学习的一个方面。<br>[105]对特定于移动边缘计算的FL进行了调查，而[116]则专注于对联合学习的威胁。</p>
+<h3 id="目的："><a href="#目的：" class="headerlink" title="目的："></a>目的：</h3><p>本文主要对Federated Learning Systems (FLSs)进行描述。首先是定义，与传统联邦学习进行比较，其次是分析了FLS的系统组件，包括各方、管理者和计算通信框架。最后根据六个不同的方面对FLS进行分类：数据分布、机器学习模型、隐私机制、通信架构、联邦规模和联邦动机。</p>
+<h3 id="联邦学习的定义："><a href="#联邦学习的定义：" class="headerlink" title="联邦学习的定义："></a>联邦学习的定义：</h3><p>FL使多方能够在不交换本地数据的情况下联合训练机器学习模型。它涵盖了分布式系统、机器学习和隐私等多个研究领域的技术。</p>
+<p>在联邦学习系统中，多方在不交换原始数据的情况下协作训练机器学习模型。该系统的输出是各方的机器学习模型（可以相同也可以不同）。</p>
+<p>一个实用的联邦学习系统具有以下约束：给定测试准确性等评估指标，在相同模型架构下，通过联邦学习学习的模型的性能应该优于通过局部训练学习的模型。</p>
+<h3 id="联邦学习的组件："><a href="#联邦学习的组件：" class="headerlink" title="联邦学习的组件："></a>联邦学习的组件：</h3><p>1）clients， 客户是数据所有者和受益人，组织和设备的不同分为cross-silo 和 cross-device settings 两种类型。硬件容量包括计算能力和存储能力可以被列入考虑，[177]考虑了FL中的资源约束设置。他们设计了一个包括资源预算的目标，并提出了一种确定局部更新轮次的算法。cross-silo 的稳定性高于 cross-device，移动设备则需要考虑链接问题，由于设备的数量可能非常大（例如，数百万），假设所有设备都参与FL的每一轮是不现实的。广泛使用的设置是选择一小部分设备在每一轮中执行计算[22]。非IID（相同和独立分布）数据分布都被认为是联合学习[77]中一种实用且具有挑战性的设置</p>
+<p>2）manager（server），一个挑战可能是很难找到一个受信任的服务器或参与方作为管理者，特别是cross-silo。</p>
+<p>3）框架。一个基本且广泛使用的框架是2016年提出的联邦平均（FedAvg）。[101]提出的SimFL代表了一个去中心化的FL框架。</p>
+<h3 id="联邦学习的分类"><a href="#联邦学习的分类" class="headerlink" title="联邦学习的分类"></a>联邦学习的分类</h3><p>1）数据类型。<br><br>数据分区基于数据在样本和特征空间中的分布方式，FLS通常可分为horizontal,<br>vertical, and hybrid FLSs[191].HFL的数据样本拥有同样的特征空间但样本空间不同。通用模型是FegAvg。经典案例：hey！siri的识别系统。VFL是不同方的数据集具有相同或相似的样本空间，但在特征空间上不同。</p>
+<p>2）机器学习模型。<br><br>现在最流行的机器学习模型是神经网络（NN），它在许多任务中取得了最先进的结果，如图像分类和单词预测[88]，[163]。有许多基于随机梯度下降的联合学习研究[22]、[119]、[174]，可用于训练神经网络。另一个广泛使用的模型是决策树，与神经网络相比，它训练效率高，易于解释。基于树的FLS被设计用于单个或多个决策树（例如，梯度增强决策树（GBDT）和随机森林）的联合训练。GBDT最近特别流行，它在许多分类和回归任务中都有很好的性能。单个机器学习模型可能很弱，但可以在联邦设置中应用集成方法[137]，如堆叠和投票。</p>
+<p>3）隐私机制。<br><br>如同态加密[13]、[26]、[66]、[108]、[143]和安全多方计算（SMC）[20]、[21]、[30]、[152]，广泛用于保护隐私的机器学习算法。许多研究采用差异隐私[7]、[29]、[96]、[104]、[167]、[203]来保护数据隐私，以确保各方无法知道个人记录是否参与了学习。通过向数据或模型参数注入随机噪声[7]、[96]、[158]、[186]，差分隐私为单个记录提供了统计隐私保证，并防止对模型的推断攻击。由于学习过程中的噪声，这种系统往往产生不太准确的模型。一种有趣的基于硬件的方法是使用可信执行环境（TEE），如Intel SGX处理器[132]、[146]，它可以保证内部加载的代码和数据得到保护。这样的环境可以在中央服务器内部使用，以提高其可信度。</p>
+<p>可能出现的攻击。1）输入。中毒攻击。2）学习过程。模型中毒攻击，拜占庭攻击。3）模型，推理攻击，成员关系推断攻击。</p>
+<p>4）通信体系结构。<br><br>FLS中有两种主要的通信方式：集中式设计和分散式设计。目前有三种不同的去中心化设计：P2P[95]，[200]，图[118]或区块链[176]，[202]。</p>
+<p>5）联邦规模。<br><br>分为cross-silo 和 cross-device。前者各方是组织或数据中心。通常有相对较少的参与方，每个参与方都有相对大量的数据和计算能力。这种FLS面临的一个挑战是如何在隐私模型的约束下有效地将计算分配到数据中心[206]。后者参与方的数量相对较大，并且每个参与方的数据量和计算能力相对较小。通常是移动设备。</p>
+<p>6）动机<br><br>动机可以是规章制度，也可以是激励措施。一个具有挑战性的问题是如何设计一个公平的激励机制，使贡献更多的一方也能从联合学习中受益更多。</p>
+<h3 id="现有研究："><a href="#现有研究：" class="headerlink" title="现有研究："></a>现有研究：</h3><p>1）多数研究只考虑水平数据分区。</p>
+<p>2）大多数研究都考虑在没有任何隐私保证的情况下交换原始模型参数。</p>
+<p>3）集中式设计是当前实现的主流。</p>
+<p>4）主要要求是提高有效性、效率和隐私，这也是评估FLS的三个重要指标</p>
+<p>· 有效性改进</p>
+<p><br>1）多数基于SGD算法。相对FedSGD，FedAvg减少了通信次数。<br><br>2）局部数据（即非IID数据）的异质性使得性能降低。非IID数据的局部最优值彼此相距甚远，平均全局模型也可能远离全局最优值。<br><br>3）基于SGD的VFL研究较少。<br><br>4）神经网络的优化器改进。<br><br>5）关于水平联合GBDT的研究。<br><br>6）线性&#x2F;逻辑回归相关的研究。<br><br>7）将FL与其他机器学习技术相结合，如多任务学习[144]、元学习[52]和迁移学习[134]。<br><br>8）FL过程中的包丢失或一方断开连接.小数据可以忽略，大数据可以重启。</p>
+<p>· 实用性增强</p>
+<p><br>1）communication cost。改变更新的规模，改进通信的架构。<br><br>2）隐私、稳健性和攻击。模型参数可能会泄露有关训练数据的敏感信息，差异隐私和安全多方计算是提供隐私保障的一种流行方法。一种流行的攻击是后门攻击，其目的是通过交换恶意的本地更新来实现糟糕的全局模型。</p>
+<p>· 应用</p>
+<p>边缘计算[44]、[127]、[140]、[195]、[201]，其中各方是边缘设备。许多研究试图将FL与移动边缘系统集成。FL在推荐系统[12]、[27]、[207]、自然语言处理[65]等方面也显示出了很好的结果。</p>
+<p>· 基准</p>
+<p>通用基准系统。FedML[68]是一个研究库，它为联合学习和基准测试功能提供了框架。OARF[70]为FL基准提供了一组实用程序和参考实现。</p>
+<p>目标基准。[129]提出了一种利用相关t检验在不同类型的联合学习算法之间进行比较的方法，同时绕过数据分布的影响。在三种FL算法FedAvg、FedSVRG[87]和CO-OP[180]的工作中，在IID和非IID设置中进行了比较，结果表明，无论数据划分如何，FedAvg在三种算法中都达到了最高的精度。[199]提出了一个针对半监督联合学习设置的基准，其中用户只有未标记的数据，服务器只有少量标记的数据。</p>
+<p>数据集。LEAF[23]是最早提出的用于联合学习的数据集之一。它包含六个数据集，涵盖不同的领域，包括图像分类、情感分析和下一个角色预测。提供了一组实用程序，以IID或非IID的方式将数据集划分为不同的部分。对于每个数据集，还提供了一个参考实现，以演示该数据集在训练过程中的使用。</p>
+<h3 id="已有系统："><a href="#已有系统：" class="headerlink" title="已有系统："></a>已有系统：</h3><p>FATE，TFF，PySyft，PaddleFL，FedML</p>
+<h3 id="设计目标："><a href="#设计目标：" class="headerlink" title="设计目标："></a>设计目标：</h3><p>· 有效性<br>· 隐私<br>· 自治<br>· 评估  必须涵盖以下几个方面：（1）模型性能，（2）系统安全性，（3）系统效率，以及（4）系统鲁棒性</p>
+<p>后面越来越没个重点，就写到这里。</p>
+
+      
+    </div>
+    
+    
+    
+  </div>
+</article>
+
+  
+<nav id="article-nav" class="article-nav">
+  
+    <a href="/2023/03/19/paperreading3/" id="article-nav-newer" class="article-nav-link-wrap newer">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Intriguing properties of neural networks
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2023/03/15/paperreading1/" id="article-nav-older" class="article-nav-link-wrap older">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">
+        
+          Federated Learning with Privacy-preserving and Model IP-right-protection
+        
+      </div>
+    </a>
+  
+</nav>
+
+
+
+
+
+
+    </div>
+  </div>
+  
+
+
+
+
+<div id="settings-container">
+  <div id="dark-mode">dark</div>
+  <div id="sans-font">sans</div>
+</div>
+<script type="text/javascript">
+let d=document,r=d.documentElement.style,f=r.setProperty.bind(r),l=localStorage,s=l.getItem('s')||(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches),n=l.getItem('n'),m=d.getElementById("dark-mode"),b=()=>{f('--bg-color','#fafafa');f('--code-bg-color','#f4f4f4');f('--text-color','#212121');f('--secondary-color','#808080');f('--tertiary-color','#b0b0b0');f('--link-color','#b5c8cf');f('--link-hover-color','#618794');f('--link-bg-color','#dae4e7');f('--selection-color','#dae4e7');m.innerHTML="dark"},c=()=>{f('--bg-color','#212121');f('--code-bg-color','#292929');f('--text-color','#fff');f('--secondary-color','#c0c0c0');f('--tertiary-color','#6e6e6e');f('--link-color','#4d6b75');f('--link-hover-color','#96b1bb');f('--link-bg-color','#5d828e');f('--selection-color','#acc1c9');m.innerHTML="light"},o=d.getElementById("sans-font"),e=()=>{f('--body-stack','"Lora", "Georgia", "Times New Roman", serif');o.innerHTML="sans"},g=()=>{f('--body-stack','"Lato", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "Verdana", sans-serif');o.innerHTML="serif"};m.onclick=()=>{if(s==2){s=1;l.setItem('s',s);c()}else{s=2;l.setItem('s',s);b()}};o.onclick=()=>{if(n==2){n=1;l.setItem('n',n);g()}else{n=2;l.setItem('n',n);e()}};if(!s){s=2;l.setItem('s',2)};if(s==1){c()};if(!n){n=2;l.setItem('n',2)};if(n==1){g()};
+</script>
+
+
+
+
+</body>
+</html>
